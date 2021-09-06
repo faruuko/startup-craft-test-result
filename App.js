@@ -11,6 +11,7 @@ import {
   Modal as M,
   Animated,
   TouchableWithoutFeedback,
+  Dimensions,
 } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 
@@ -173,19 +174,15 @@ const ListItem = ({ data, index, showTime }) => {
 // Modal popup
 const Modal = ({ visible, children, setVisible }) => {
   const [showModal, setShowModal] = React.useState(visible);
-  const [modalContentHeight, setModalContentHeight] = React.useState(0);
+  const [panY, setPanY] = React.useState(
+    new Animated.Value(Dimensions.get('screen').height)
+  );
 
   const modalOpacityValue = React.useRef(new Animated.Value(0)).current;
-  const modalContentPositionValue = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     toggleModal();
   }, [visible]);
-
-  const getModalContentHeight = (layout) => {
-    const { height } = layout;
-    setModalContentHeight(height);
-  };
 
   const toggleModal = () => {
     if (visible) {
@@ -196,10 +193,10 @@ const Modal = ({ visible, children, setVisible }) => {
         useNativeDriver: true,
       }).start();
 
-      Animated.timing(modalContentPositionValue, {
+      Animated.timing(panY, {
         toValue: 0,
         duration: 100,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start();
     } else {
       setTimeout(() => {
@@ -211,10 +208,10 @@ const Modal = ({ visible, children, setVisible }) => {
         useNativeDriver: true,
       }).start();
 
-      Animated.timing(modalContentPositionValue, {
-        toValue: modalContentHeight,
+      Animated.timing(panY, {
+        toValue: Dimensions.get('screen').height,
         duration: 100,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start();
     }
   };
@@ -222,6 +219,11 @@ const Modal = ({ visible, children, setVisible }) => {
   const onSwipeDown = () => {
     setVisible(false);
   };
+
+  const top = panY.interpolate({
+    inputRange: [-1, 0, 1],
+    outputRange: [0, 0, 1],
+  });
 
   return (
     <GestureRecognizer
@@ -236,16 +238,10 @@ const Modal = ({ visible, children, setVisible }) => {
           }}
         >
           <Animated.View
-            onLayout={(event) => {
-              getModalContentHeight(event.nativeEvent.layout);
-            }}
             style={[styles.modalBackground, { opacity: modalOpacityValue }]}
           ></Animated.View>
         </TouchableWithoutFeedback>
-
-        <Animated.View style={[{ translateY: modalContentPositionValue }]}>
-          {children}
-        </Animated.View>
+        <Animated.View style={[{ top }]}>{children}</Animated.View>
       </M>
     </GestureRecognizer>
   );
