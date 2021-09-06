@@ -18,6 +18,11 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 const STATUSBAR_HEIGHT = S.currentHeight;
 const ACTIVE_OPACITY = 0.7;
 
+const arrow_left = require('./assets/arrow-left.png');
+const arrow_down = require('./assets/arrow-down.png');
+const arrow_right = require('./assets/arrow-right.png');
+const plus_icon = require('./assets/plus-icon.png');
+
 const item = [
   {
     day: 'Sunday',
@@ -100,10 +105,7 @@ const StatusBar = ({ backgroundColor, barStyle }) => (
 const Header = ({ title }) => (
   <View style={styles.headerContainer}>
     <View style={styles.headerBtnContainer}>
-      <Image
-        style={styles.headerBtn}
-        source={require('./assets/arrow-left.png')}
-      />
+      <Image style={styles.headerBtn} source={arrow_left} />
     </View>
     <Text style={styles.headerText}>{title}</Text>
   </View>
@@ -119,17 +121,11 @@ const InputBox = ({ palceholder, onInputPress }) => (
     >
       <View style={styles.inputBox}>
         <Text style={styles.inputBoxText}>{palceholder}</Text>
-        <Image
-          style={styles.inputBoxArrowDownImage}
-          source={require('./assets/arrow-down.png')}
-        />
+        <Image style={styles.inputBoxArrowDownImage} source={arrow_down} />
       </View>
     </TouchableOpacity>
     <View style={styles.inputBoxBtn}>
-      <Image
-        style={styles.inputBoxPlusImage}
-        source={require('./assets/plus-icon.png')}
-      />
+      <Image style={styles.inputBoxPlusImage} source={plus_icon} />
     </View>
   </View>
 );
@@ -138,17 +134,11 @@ const InputBox = ({ palceholder, onInputPress }) => (
 const Calendar = ({ month }) => (
   <View style={styles.calendarContainer}>
     <View style={styles.calendarControl}>
-      <Image
-        style={styles.calendarControlImage}
-        source={require('./assets/arrow-left.png')}
-      />
+      <Image style={styles.calendarControlImage} source={arrow_left} />
     </View>
     <Text style={styles.calendarMonth}>{month}</Text>
     <View style={styles.calendarControl}>
-      <Image
-        style={styles.calendarControlImage}
-        source={require('./assets/arrow-right.png')}
-      />
+      <Image style={styles.calendarControlImage} source={arrow_right} />
     </View>
   </View>
 );
