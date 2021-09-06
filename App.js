@@ -237,6 +237,7 @@ const Modal = ({ visible, children, setVisible }) => {
   );
 };
 
+// Option item
 const OptionItem = ({
   title,
   active,
