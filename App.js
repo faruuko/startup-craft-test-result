@@ -12,11 +12,16 @@ import {
   Animated,
   TouchableWithoutFeedback,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 
 const STATUSBAR_HEIGHT = S.currentHeight;
 const ACTIVE_OPACITY = 0.7;
+const SCREEN_HEIGHT = setTimeout(() => {
+  Dimensions.get('screen').height;
+}, 1);
+const ACTION_SHEET_MAX_HEIGHT = 500;
 
 const arrow_left = require('./assets/arrow-left.png');
 const arrow_down = require('./assets/arrow-down.png');
@@ -164,15 +169,19 @@ const ListItem = ({ data, index, showTime }) => {
 // Modal popup
 const Modal = ({ visible, children, setVisible }) => {
   const [showModal, setShowModal] = React.useState(visible);
-  const [panY, setPanY] = React.useState(
-    new Animated.Value(Dimensions.get('screen').height)
-  );
+  const [panY, setPanY] = React.useState(new Animated.Value(SCREEN_HEIGHT));
+  const [actionSheetHeight, setActionSheetHeight] = React.useState(0);
 
   const modalOpacityValue = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     toggleModal();
   }, [visible]);
+
+  const getActionSheetHeight = (layout) => {
+    const { height } = layout;
+    setActionSheetHeight(height);
+  };
 
   const toggleModal = () => {
     if (visible) {
@@ -199,7 +208,7 @@ const Modal = ({ visible, children, setVisible }) => {
       }).start();
 
       Animated.timing(panY, {
-        toValue: Dimensions.get('screen').height,
+        toValue: SCREEN_HEIGHT,
         duration: 100,
         useNativeDriver: false,
       }).start();
@@ -231,7 +240,28 @@ const Modal = ({ visible, children, setVisible }) => {
             style={[styles.modalBackground, { opacity: modalOpacityValue }]}
           ></Animated.View>
         </TouchableWithoutFeedback>
-        <Animated.View style={[{ top }]}>{children}</Animated.View>
+
+        <Animated.View
+          onLayout={(event) => {
+            getActionSheetHeight(event.nativeEvent.layout);
+          }}
+          style={[
+            {
+              maxHeight: ACTION_SHEET_MAX_HEIGHT,
+              backgroundColor: '#FFF',
+              top,
+            },
+          ]}
+        >
+          <ScrollView
+            scrollEnabled={
+              actionSheetHeight < ACTION_SHEET_MAX_HEIGHT ? false : true
+            }
+            showsVerticalScrollIndicator={true}
+          >
+            {children}
+          </ScrollView>
+        </Animated.View>
       </M>
     </GestureRecognizer>
   );
@@ -289,6 +319,8 @@ export default function App() {
               setAvailability={setAvailability}
               availability={availability}
             />
+
+            {/* <View style={{ backgroundColor: 'red', height: 500 }}></View> */}
 
             <View style={styles.hr} />
 
